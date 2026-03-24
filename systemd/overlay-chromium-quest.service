@@ -1,0 +1,29 @@
+[Unit]
+Description=Quest casting Chromium window
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=CG_QUEST_URL=https://www.oculus.com/casting
+Environment=CG_QUEST_PROFILE_DIR=%h/.config/cg-overlay-box/chromium-quest
+Environment=CHROME_DEBUG_PORT=9223
+
+ExecStartPre=/usr/bin/mkdir -p %h/.config/cg-overlay-box/chromium-quest
+ExecStart=/usr/bin/chromium \
+  --kiosk \
+  --noerrdialogs \
+  --disable-infobars \
+  --disable-session-crashed-bubble \
+  --password-store=basic \
+  --disable-features=TranslateUI \
+  --disable-notifications \
+  --remote-debugging-port=${CHROME_DEBUG_PORT} \
+  --user-data-dir=${CG_QUEST_PROFILE_DIR} \
+  --app=${CG_QUEST_URL}
+
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

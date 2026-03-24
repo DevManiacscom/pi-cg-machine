@@ -1,0 +1,12 @@
+.env
+.DS_Store
+*.env
+*.pyc
+_test
+__pycache__/
+.venv/
+overlay-env/
+*.log
+*.sqlite*
+chromium-profile/
+chromium-quest/

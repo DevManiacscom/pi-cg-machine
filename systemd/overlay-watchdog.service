@@ -1,0 +1,6 @@
+[Unit]
+Description=Overlay API watchdog (health check)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/overlay-watchdog.sh

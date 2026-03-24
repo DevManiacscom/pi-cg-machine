@@ -1,0 +1,29 @@
+[Unit]
+Description=Overlay Chromium window
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=CG_OVERLAY_URL=http://127.0.0.1:8080/?v=overlay_main
+Environment=CG_OVERLAY_PROFILE_DIR=%t/cg-overlay-box/chromium-overlay
+Environment=CG_OVERLAY_CACHE_DIR=%t/cg-overlay-box/chromium-overlay-cache
+
+ExecStartPre=/usr/bin/mkdir -p %t/cg-overlay-box/chromium-overlay %t/cg-overlay-box/chromium-overlay-cache
+ExecStart=/usr/bin/chromium \
+  --kiosk \
+  --noerrdialogs \
+  --disable-infobars \
+  --disable-session-crashed-bubble \
+  --password-store=basic \
+  --disable-features=TranslateUI \
+  --user-data-dir=${CG_OVERLAY_PROFILE_DIR} \
+  --disk-cache-dir=${CG_OVERLAY_CACHE_DIR} \
+  --disk-cache-size=1 \
+  --app=${CG_OVERLAY_URL}
+
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

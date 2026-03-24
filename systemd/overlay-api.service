@@ -1,0 +1,18 @@
+[Unit]
+Description=CG Overlay Box API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/cg-overlay-box/backend
+EnvironmentFile=%h/.config/cg-overlay-box/overlay.env
+Environment=CG_OVERLAY_DATA_DIR=%h/.local/state/cg-overlay-box
+ExecStart=%h/cg-overlay-box/.venv/bin/uvicorn main:app --host 0.0.0.0 --port ${OVERLAY_PORT}
+Restart=always
+RestartSec=2
+KillSignal=SIGINT
+TimeoutStopSec=10
+
+[Install]
+WantedBy=default.target
