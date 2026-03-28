@@ -17,6 +17,7 @@ from pydantic import BaseModel
 APP_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = APP_ROOT / "scripts"
 DATA_DIR = Path(os.getenv("CG_OVERLAY_DATA_DIR", "/var/lib/overlay-box"))
+PYTHON_BIN = APP_ROOT / ".venv" / "bin" / "python"
 
 TOKEN = os.getenv("OVERLAY_TOKEN")
 if not TOKEN:
@@ -137,7 +138,6 @@ def sanitize_toast_text(
     return f"{safe_from}: {safe_msg}".strip()
 
 
-
 def run_script(script_name: str, *args: str, check: bool = True) -> subprocess.CompletedProcess:
     script_path = SCRIPTS_DIR / script_name
     return subprocess.run([str(script_path), *args], check=check)
@@ -146,6 +146,16 @@ def run_script(script_name: str, *args: str, check: bool = True) -> subprocess.C
 def run_script_background(script_name: str, *args: str) -> subprocess.Popen:
     script_path = SCRIPTS_DIR / script_name
     return subprocess.Popen([str(script_path), *args])
+
+
+def run_python_script(script_name: str, *args: str, check: bool = True) -> subprocess.CompletedProcess:
+    script_path = SCRIPTS_DIR / script_name
+    return subprocess.run([str(PYTHON_BIN), str(script_path), *args], check=check)
+
+
+def run_python_script_background(script_name: str, *args: str) -> subprocess.Popen:
+    script_path = SCRIPTS_DIR / script_name
+    return subprocess.Popen([str(PYTHON_BIN), str(script_path), *args])
 
 
 def switch_view(view: str) -> None:
@@ -441,14 +451,14 @@ async def view_quest(token: str | None = None) -> dict[str, str | bool]:
 @app.get("/api/view/quest_fullscreen")
 async def view_quest_fullscreen(token: str | None = None) -> dict[str, str | bool]:
     auth(token)
-    run_script("quest_fullscreen.sh")
+    run_python_script("quest_fullscreen.py")
     return {"ok": True, "view": "quest_fullscreen"}
 
 
 @app.get("/api/view/quest_audio_max")
 async def view_quest_audio_max(token: str | None = None) -> dict[str, str | bool]:
     auth(token)
-    run_script("quest_audio_max.sh")
+    run_python_script("quest_audio_max.py")
     return {"ok": True, "view": "quest_audio_max"}
 
 
