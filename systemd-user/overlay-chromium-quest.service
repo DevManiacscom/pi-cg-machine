@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-Environment=CG_QUEST_URL=https://www.oculus.com/casting
+Environment=CG_QUEST_URL=https://horizon.meta.com/casting
 Environment=CG_QUEST_PROFILE_DIR=%h/.config/cg-overlay-box/chromium-quest
 Environment=CHROME_DEBUG_PORT=9223
 
