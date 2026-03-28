@@ -14,7 +14,7 @@ import websockets
 DEBUG_HOST = os.getenv("CHROME_DEBUG_HOST", "127.0.0.1")
 DEBUG_PORT = int(os.getenv("CHROME_DEBUG_PORT", "9223"))
 
-CASTING_URL_SUBSTRING = "oculus.com/casting"
+CASTING_URL_SUBSTRING = "horizon.meta.com/casting"
 CASTING_TITLE_SUBSTRING = "Casting | Meta Horizon"
 
 
