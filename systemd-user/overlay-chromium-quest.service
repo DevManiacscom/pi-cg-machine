@@ -5,7 +5,10 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-Environment=CG_QUEST_URL=https://horizon.meta.com/casting
+Environment=DISPLAY=:0
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+Environment=XAUTHORITY=%h/.Xauthority
+Environment=CG_QUEST_URL=https://horizon.meta.com/casting/
 Environment=CG_QUEST_PROFILE_DIR=%h/.config/cg-overlay-box/chromium-quest
 Environment=CHROME_DEBUG_PORT=9223
 
@@ -18,9 +21,11 @@ ExecStart=/usr/bin/chromium \
   --password-store=basic \
   --disable-features=TranslateUI \
   --disable-notifications \
+  --autoplay-policy=no-user-gesture-required \
   --remote-debugging-port=${CHROME_DEBUG_PORT} \
   --user-data-dir=${CG_QUEST_PROFILE_DIR} \
   --app=${CG_QUEST_URL}
+ExecStartPost=/bin/sh -lc 'sleep 3; DISPLAY=:0 XAUTHORITY=%h/.Xauthority xset s off; DISPLAY=:0 XAUTHORITY=%h/.Xauthority xset -dpms; DISPLAY=:0 XAUTHORITY=%h/.Xauthority xset s noblank'
 
 Restart=always
 RestartSec=2

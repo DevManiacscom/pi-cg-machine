@@ -5,6 +5,9 @@ Wants=network-online.target
 
 [Service]
 Type=simple
+Environment=DISPLAY=:0
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+Environment=XAUTHORITY=%h/.Xauthority
 Environment=CG_OVERLAY_URL=http://127.0.0.1:8080/?v=overlay_main
 Environment=CG_OVERLAY_PROFILE_DIR=%t/cg-overlay-box/chromium-overlay
 Environment=CG_OVERLAY_CACHE_DIR=%t/cg-overlay-box/chromium-overlay-cache
@@ -21,6 +24,7 @@ ExecStart=/usr/bin/chromium \
   --disk-cache-dir=${CG_OVERLAY_CACHE_DIR} \
   --disk-cache-size=1 \
   --app=${CG_OVERLAY_URL}
+ExecStartPost=/bin/sh -lc 'sleep 3; DISPLAY=:0 XAUTHORITY=%h/.Xauthority xset s off; DISPLAY=:0 XAUTHORITY=%h/.Xauthority xset -dpms; DISPLAY=:0 XAUTHORITY=%h/.Xauthority xset s noblank'
 
 Restart=always
 RestartSec=2

@@ -92,10 +92,12 @@ systemd --user
         │      └─ FastAPI backend (backend/main.py)
         │
         ├─ overlay-chromium-overlay.service
-        │      └─ Chromium overlay window
+        │      ├─ Chromium overlay window
+        │      └─ ExecStartPost → xset s off / -dpms / noblank
         │
         ├─ overlay-chromium-quest.service
-        │      └─ Chromium Meta Quest casting window
+        │      ├─ Chromium Meta Quest casting window
+        │      └─ ExecStartPost → xset s off / -dpms / noblank
         │
         ├─ overlay-watchdog.timer
         │      └─ overlay-watchdog.service
@@ -164,7 +166,6 @@ mkdir -p ~/.config/cg-overlay-box
 cp .env.example ~/.config/cg-overlay-box/overlay.env
 
 mkdir -p ~/.local/state/cg-overlay-box
-
 mkdir -p ~/.config/systemd/user
 cp systemd-user/*.service ~/.config/systemd/user/
 
@@ -414,7 +415,33 @@ sudo loginctl enable-linger "$(whoami)"
 
 This ensures user-level services survive reboots and do not depend on an interactive terminal session.
 
-### 3. Keep `.env` outside the repository
+### 3. Disable screen blanking
+
+This project disables X11 screen blanking and DPMS from the Chromium user services themselves via `ExecStartPost`, instead of using a separate blanking service.
+
+Also make sure kernel console blanking is disabled:
+
+```bash
+sudo nano /boot/firmware/cmdline.txt
+```
+
+Add this to the end of the existing single line:
+
+```bash
+consoleblank=0
+```
+
+After reboot, verify:
+
+```bash
+DISPLAY=:0 XAUTHORITY=$HOME/.Xauthority xset q
+```
+
+Expected:
+    •   timeout: 0
+    •   DPMS is Disabled
+
+### 4. Keep `.env` outside the repository
 
 Use:
 
@@ -424,7 +451,7 @@ Use:
 
 Never commit real tokens or real ATEM IPs.
 
-### 4. Restrict API exposure
+### 5. Restrict API exposure
 
 This API is meant for a trusted local network.
 
@@ -442,14 +469,14 @@ sudo ufw enable
 
 Adjust the subnet to match your network.
 
-### 5. Use stable IPs
+### 6. Use stable IPs
 
 Assign stable addresses or DHCP reservations for:
 - Raspberry Pi
 - ATEM switcher
 - StreamDeck host (if useful for firewall rules)
 
-### 6. Verify after every reboot
+### 7. Verify after every reboot
 
 Run:
 

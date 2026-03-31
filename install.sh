@@ -35,10 +35,11 @@ mkdir -p "$SYSTEMD_USER_DIR"
 echo "[+] Installing systemd user services"
 
 SERVICES=(
-  overlay-backend.service
+  overlay-api.service
   overlay-chromium-overlay.service
   overlay-chromium-quest.service
-  disable-screen-blanking.service
+  overlay-watchdog.service
+  overlay-watchdog.timer
 )
 
 for svc in "${SERVICES[@]}"; do
@@ -70,19 +71,24 @@ for svc in "${SERVICES[@]}"; do
   fi
 done
 
+# Use system-provided unclutter service if present
+if systemctl --user list-unit-files | grep -q '^unclutter\.service'; then
+  systemctl --user enable unclutter.service || true
+fi
+
 # -----------------------------
 # Start services
 # -----------------------------
 echo "[+] Starting services"
 
-for svc in "${SERVICES[@]}"; do
-  if [ -f "$SYSTEMD_USER_DIR/$svc" ]; then
-    systemctl --user restart "$svc" || true
-  fi
-done
+systemctl --user restart overlay-api.service || true
+systemctl --user restart overlay-chromium-quest.service || true
+systemctl --user restart overlay-chromium-overlay.service || true
+systemctl --user restart overlay-watchdog.timer || true
+systemctl --user restart unclutter.service || true
 
 # -----------------------------
-# Ensure linger (important for kiosk setups)
+# Ensure linger
 # -----------------------------
 if command -v loginctl >/dev/null 2>&1; then
   USER_NAME="$(id -un)"
@@ -91,14 +97,22 @@ if command -v loginctl >/dev/null 2>&1; then
 fi
 
 # -----------------------------
+# Reminder about console blanking
+# -----------------------------
+echo
+echo "[!] Make sure /boot/firmware/cmdline.txt contains: consoleblank=0"
+echo "    (same single line, no line breaks)"
+
+# -----------------------------
 # Done
 # -----------------------------
 echo "[+] Install complete"
 
 echo
 echo "Useful commands:"
-echo "  systemctl --user status overlay-backend.service"
-echo "  systemctl --user status overlay-chromium-overlay.service"
-echo "  systemctl --user status overlay-chromium-quest.service"
-echo "  systemctl --user status disable-screen-blanking.service"
+echo "  systemctl --user status overlay-api.service --no-pager"
+echo "  systemctl --user status overlay-chromium-overlay.service --no-pager"
+echo "  systemctl --user status overlay-chromium-quest.service --no-pager"
+echo "  systemctl --user status overlay-watchdog.timer --no-pager"
+echo "  DISPLAY=:0 XAUTHORITY=\$HOME/.Xauthority xset q"
 echo
