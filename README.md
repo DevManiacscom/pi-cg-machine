@@ -438,8 +438,9 @@ DISPLAY=:0 XAUTHORITY=$HOME/.Xauthority xset q
 ```
 
 Expected:
-    •   timeout: 0
-    •   DPMS is Disabled
+
+- timeout: 0
+- DPMS is Disabled
 
 ### 4. Keep `.env` outside the repository
 
