@@ -148,9 +148,9 @@ def run_script_background(script_name: str, *args: str) -> subprocess.Popen:
     return subprocess.Popen([str(script_path), *args])
 
 
-def run_python_script(script_name: str, *args: str, check: bool = True) -> subprocess.CompletedProcess:
+def run_script(script_name: str, *args: str, check: bool = True) -> subprocess.CompletedProcess:
     script_path = SCRIPTS_DIR / script_name
-    return subprocess.run([str(PYTHON_BIN), str(script_path), *args], check=check)
+    return subprocess.run([str(script_path), *args], check=check)
 
 
 def run_python_script_background(script_name: str, *args: str) -> subprocess.Popen:

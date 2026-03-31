@@ -1,0 +1,14 @@
+[Unit]
+Description=Disable screen blanking and DPMS
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=oneshot
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=%h/.Xauthority
+ExecStart=/bin/sh -lc 'xset s off && xset -dpms && xset s noblank'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
